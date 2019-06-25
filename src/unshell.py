@@ -1,29 +1,42 @@
-from typing import Awaitable, Any, Callable, NotReturn, Generator, AsyncGenerator
+from typing import Any, Callable
+from type import Options, Script, Args, Commands
 
-from subprocess import run
-from os import system
+import inspect
+import os
 
-def Unshell(opt: Options):
-    def exec(script: Script, *args: Args) -> Awaitable[Any]:
-        assert_unshell_scritpt(script)
+defaultOptions = Options(env={})
 
-        commands = script(*args)
+
+def Unshell(opt: Options = defaultOptions):
+    def exec(script: Script, *args: Args) -> Any:
+        assert_unshell_script(script)
+
+        commands: Commands = script(*args)
 
         for command in commands:
-            system(cmd)
+            print(f"• {command}")
+
+            res = os.system(command)
+
+            print(res)
+
+        return res
 
     return exec
 
-def assert_unshell_scritpt (fn: Callable) -> bool | NotReturn:
-  if is_generator(fn): return True
-  if is_async_generator(fn): return True
 
-  raise TypeError('unshell: Invalid SCRIPT')
+def assert_unshell_script(fn: Callable) -> bool:
+    if is_async_generator(fn):
+        return True
+    if is_generator(fn):
+        return True
 
-def is_generator (fn: Callable) -> bool:
-    # inspect.isgeneratorfunction(fn)
-    return isinstance(fn, Generator)
+    raise TypeError('unshell: Invalid SCRIPT')
 
-def is_async_generator (fn: Callable) -> bool:
-    # inspect.isgeneratorfunction(fn)
-    return isinstance(fn, AsyncGenerator)
+
+def is_generator(fn: Callable) -> bool:
+    return inspect.isgeneratorfunction(fn)
+
+
+def is_async_generator(fn: Callable) -> bool:
+    return inspect.isgeneratorfunction(fn) and inspect.iscoroutinefunction(fn)

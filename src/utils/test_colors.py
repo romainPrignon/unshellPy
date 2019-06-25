@@ -3,6 +3,7 @@ import unittest
 # test
 import src.utils.colors as colors
 
+
 class TestColors(unittest.TestCase):
     def test_red(self):
         # given
