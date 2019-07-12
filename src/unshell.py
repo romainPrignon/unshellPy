@@ -1,8 +1,8 @@
 from typing import Any, Callable
-from type import Options, Script, Args, Commands
+from type import Options, Script, Args, Commands, Command
 
 import inspect
-import os
+import subprocess
 
 defaultOptions = Options(env={})
 
@@ -12,17 +12,56 @@ def Unshell(opt: Options = defaultOptions):
         assert_unshell_script(script)
 
         commands: Commands = script(*args)
+        cmd_res = None
 
-        for command in commands:
-            print(f"• {command}")
+        while True:
+            try:
+                command: Command = commands.send(cmd_res)
 
-            res = os.system(command)
+                if not isValidCmd(command):
+                    continue
 
-            print(res)
+                cmd_res = do_exec(command)
 
-        return res
+            except StopIteration as command:
+                if not command.value:  # if there is no return
+                    break
+
+                if not isValidCmd(command.value):
+                    continue
+
+                cmd_res = do_exec(command.value)
+                break
 
     return exec
+
+
+def do_exec(command: Command) -> str:
+    print(f"• {command}")
+
+    cmd, *cmdArgs = command.split()
+
+    process_result = subprocess.run(
+        [cmd, *cmdArgs], capture_output=True
+    )
+    stdout = process_result.stdout
+    stderr = process_result.stderr
+    return_code = process_result.returncode
+
+    if stderr and return_code:
+        err = f"{command}: {stderr}"
+
+        print(err)
+        raise Exception(err)
+
+        return stderr
+
+    if stdout:
+        print(f"➜ {stdout}")
+
+        return stdout
+
+    raise Exception("unshell: something went wrong")
 
 
 def assert_unshell_script(fn: Callable) -> bool:
@@ -40,3 +79,7 @@ def is_generator(fn: Callable) -> bool:
 
 def is_async_generator(fn: Callable) -> bool:
     return inspect.isgeneratorfunction(fn) and inspect.iscoroutinefunction(fn)
+
+
+def isValidCmd(cmd: str) -> bool:
+    return bool(cmd)

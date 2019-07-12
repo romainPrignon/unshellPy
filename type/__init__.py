@@ -2,7 +2,8 @@ from typing import Any, Callable, Iterator, Dict, List
 from dataclasses import dataclass
 
 Args = List[Any]
-Commands = Iterator
+Command = str
+Commands = Iterator[Command]
 Script = Callable[[Args], Commands]
 
 
