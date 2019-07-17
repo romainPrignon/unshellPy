@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, List
 from type import Options
 
 import unittest
@@ -187,5 +187,74 @@ class TestUnshell(unittest.TestCase):
             call(f"• {cmd} {cmd_args}"),
             call(f"➜ {res}"),
             call(f"• {cmd} {cmd_args}"),
+            call(f"➜ {res}"),
+        ])
+
+    @patch('builtins.print')
+    @patch('subprocess.run')
+    def test_unshell_should_pass_cmd_res_to_next_cmd(
+        self,
+        run_mock,
+        print_mock
+    ):
+        # given
+        opt = Options(env={})
+        cmd1: str = "echo1"
+        cmd2: str = "echo2"
+        cmd1_arg: str = "OK"
+        res: str = "result of echo OK"
+
+        def script():
+            cmd1_res = yield f"{cmd1} {cmd1_arg}"
+            yield f"{cmd2} {cmd1_res}"
+
+        # mock
+        run_mock.return_value = CompletedProcess(
+            args=[cmd1],
+            returncode=0,
+            stdout=res
+        )
+
+        # when
+        Unshell(opt)(script)
+
+        # then
+        self.assertEqual(run_mock.mock_calls, [
+            call([cmd1, cmd1_arg], capture_output=True),
+            call([cmd2, *res.split()], capture_output=True)
+        ])
+
+    @patch('builtins.print')
+    @patch('subprocess.run')
+    def test_unshell_should_pass_args_to_script(self, run_mock, print_mock):
+        # given
+        opt = Options(env={})
+        cmd: str = "echo"
+        script_args: List[str] = ['1', '2']
+        res: str = "result of echo OK"
+
+        def script(*args: List[str]):
+            for arg in args:
+                yield f"{cmd} {arg}"
+
+        # mock
+        run_mock.return_value = CompletedProcess(
+            args=[cmd],
+            returncode=0,
+            stdout=res
+        )
+
+        # when
+        Unshell(opt)(script, *script_args)
+
+        # then
+        self.assertEqual(run_mock.mock_calls, [
+            call([cmd, script_args[0]], capture_output=True),
+            call([cmd, script_args[1]], capture_output=True)
+        ])
+        self.assertEqual(print_mock.mock_calls, [
+            call(f"• {cmd} {script_args[0]}"),
+            call(f"➜ {res}"),
+            call(f"• {cmd} {script_args[1]}"),
             call(f"➜ {res}"),
         ])

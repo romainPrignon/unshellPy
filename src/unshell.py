@@ -39,10 +39,9 @@ def Unshell(opt: Options = defaultOptions):
 def do_exec(command: Command) -> str:
     print(f"• {command}")
 
-    cmd, *cmdArgs = command.split()
-
     process_result = subprocess.run(
-        [cmd, *cmdArgs], capture_output=True
+        command.split(),
+        capture_output=True
     )
     stdout = process_result.stdout
     stderr = process_result.stderr
