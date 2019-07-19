@@ -1,12 +1,44 @@
+from dataclasses import dataclass
 from typing import Callable, List
 from type import Options
 
 import unittest
+import asyncio
 from unittest.mock import patch, call
-from subprocess import CompletedProcess
 
 # test
 from src.unshell import Unshell
+
+
+# mock
+loop = asyncio.get_event_loop()
+
+
+def make_future_process(return_code, stdout, stderr):
+    @dataclass
+    class Stdout:
+        def decode(self, format):
+            return stdout
+
+    @dataclass
+    class Stderr:
+        def decode(self, format):
+            return stderr
+
+    @dataclass
+    class Process:
+        returncode: int = return_code
+
+        async def wait(self):
+            return
+
+        async def communicate(self):
+            return [Stdout(), Stderr()]
+
+    future_process = asyncio.Future(loop=loop)
+    future_process.set_result(Process())
+
+    return future_process
 
 
 class TestUnshell(unittest.TestCase):
@@ -33,38 +65,38 @@ class TestUnshell(unittest.TestCase):
             Unshell()(script)
 
     @patch('builtins.print')
-    @patch('subprocess.run')
-    def test_unshell_should_process_command(self, run_mock, print_mock):
+    @patch('asyncio.create_subprocess_shell')
+    def test_unshell_should_process_command(self, shell_mock, print_mock):
         # given
         opt = Options(env={})
-        cmd: str = "echo"
-        cmd_args: str = "OK"
-        res: str = "result of echo OK"
+        cmd: str = "echo OK"
+        stdout: str = "result of echo OK"
+        stderr: str = ""
 
         def script():
-            yield f"{cmd} {cmd_args}"
+            yield f"{cmd}"
 
         # mock
-        run_mock.return_value = CompletedProcess(
-            args=[cmd_args],
-            returncode=0,
-            stdout=res
-        )
+        shell_mock.return_value = make_future_process(0, stdout, stderr)
 
         # when
         Unshell(opt)(script)
 
         # then
-        run_mock.assert_called_once_with([cmd, cmd_args], capture_output=True)
+        shell_mock.assert_called_once_with(
+            cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
         self.assertEqual(print_mock.mock_calls, [
-            call(f"• {cmd} {cmd_args}"),
-            call(f"➜ {res}"),
+            call(f"• {cmd}"),
+            call(f"➜ {stdout}"),
         ])
 
     @patch('builtins.print')
-    @patch('subprocess.run')
+    @patch('asyncio.create_subprocess_shell')
     def test_unshell_should_not_process_unvalid_command(
-        self, run_mock, print_mock
+        self, shell_mock, print_mock
     ):
         # given
         opt = Options(env={})
@@ -76,185 +108,289 @@ class TestUnshell(unittest.TestCase):
         Unshell(opt)(script)
 
         # then
-        run_mock.assert_not_called()
+        shell_mock.assert_not_called()
         print_mock.assert_not_called()
 
     @patch('builtins.print')
-    @patch('subprocess.run')
+    @patch('asyncio.create_subprocess_shell')
     def test_unshell_should_handle_command_throwing_error(
-        self, run_mock, print_mock
+        self, shell_mock, print_mock
     ):
         # given
         opt = Options(env={})
-        cmd: str = "echo"
-        cmd_args: str = "OK"
-        cmd_res: str = "cmd error"
+        cmd: str = "echo OK"
+        stderr: str = "cmd error"
 
         def script():
-            yield f"{cmd} {cmd_args}"
+            yield f"{cmd}"
 
         # mock
-        run_mock.return_value = CompletedProcess(
-            args=[cmd, cmd_args],
-            returncode=1,
-            stderr=cmd_res
-        )
+        shell_mock.return_value = make_future_process(1, None, stderr)
 
         # when
         try:
             Unshell(opt)(script)
         except Exception as err:
             # then
-            err_msg = f"{cmd} {cmd_args}: {cmd_res}"
+            err_msg = f"{cmd}: {stderr}"
             self.assertEqual(str(err), err_msg)
             self.assertEqual(print_mock.mock_calls, [
-                call(f"• {cmd} {cmd_args}"),
+                call(f"• {cmd}"),
                 call(f"{err_msg}"),
             ])
 
     @patch('builtins.print')
-    @patch('subprocess.run')
+    @patch('asyncio.create_subprocess_shell')
     def test_unshell_should_process_several_command(
         self,
-        run_mock,
+        shell_mock,
         print_mock
     ):
         # given
         opt = Options(env={})
-        cmd: str = "echo"
-        cmd_args: str = "OK"
-        res: str = "result of echo OK"
+        cmd: str = "echo OK"
+        stdout: str = "result of echo OK"
 
         def script():
-            yield f"{cmd} {cmd_args}"
-            yield f"{cmd} {cmd_args}"
+            yield f"{cmd}"
+            yield f"{cmd}"
 
         # mock
-        run_mock.return_value = CompletedProcess(
-            args=[cmd_args],
-            returncode=0,
-            stdout=res
-        )
+        shell_mock.return_value = make_future_process(0, stdout, None)
 
         # when
         Unshell(opt)(script)
 
         # then
-        self.assertEqual(run_mock.mock_calls, [
-            call([cmd, cmd_args], capture_output=True),
-            call([cmd, cmd_args], capture_output=True)
+        self.assertEqual(shell_mock.mock_calls, [
+            call(
+                cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            ),
+            call(
+                cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            ),
         ])
         self.assertEqual(print_mock.mock_calls, [
-            call(f"• {cmd} {cmd_args}"),
-            call(f"➜ {res}"),
-            call(f"• {cmd} {cmd_args}"),
-            call(f"➜ {res}"),
+            call(f"• {cmd}"),
+            call(f"➜ {stdout}"),
+            call(f"• {cmd}"),
+            call(f"➜ {stdout}"),
         ])
 
     @patch('builtins.print')
-    @patch('subprocess.run')
+    @patch('asyncio.create_subprocess_shell')
     def test_unshell_should_process_yield_and_return_command(
         self,
-        run_mock,
+        shell_mock,
         print_mock
     ):
         # given
         opt = Options(env={})
-        cmd: str = "echo"
-        cmd_args: str = "OK"
-        res: str = "result of echo OK"
+        cmd: str = "echo OK"
+        stdout: str = "result of echo OK"
 
         def script():
-            yield f"{cmd} {cmd_args}"
-            return f"{cmd} {cmd_args}"
+            yield f"{cmd}"
+            return f"{cmd}"
 
         # mock
-        run_mock.return_value = CompletedProcess(
-            args=[cmd_args],
-            returncode=0,
-            stdout=res
-        )
+        shell_mock.return_value = make_future_process(0, stdout, None)
 
         # when
         Unshell(opt)(script)
 
         # then
-        self.assertEqual(run_mock.mock_calls, [
-            call([cmd, cmd_args], capture_output=True),
-            call([cmd, cmd_args], capture_output=True)
+        self.assertEqual(shell_mock.mock_calls, [
+            call(
+                cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            ),
+            call(
+                cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            ),
         ])
         self.assertEqual(print_mock.mock_calls, [
-            call(f"• {cmd} {cmd_args}"),
-            call(f"➜ {res}"),
-            call(f"• {cmd} {cmd_args}"),
-            call(f"➜ {res}"),
+            call(f"• {cmd}"),
+            call(f"➜ {stdout}"),
+            call(f"• {cmd}"),
+            call(f"➜ {stdout}"),
         ])
 
     @patch('builtins.print')
-    @patch('subprocess.run')
+    @patch('asyncio.create_subprocess_shell')
     def test_unshell_should_pass_cmd_res_to_next_cmd(
         self,
-        run_mock,
+        shell_mock,
         print_mock
     ):
         # given
         opt = Options(env={})
-        cmd1: str = "echo1"
-        cmd2: str = "echo2"
-        cmd1_arg: str = "OK"
-        res: str = "result of echo OK"
+        cmd1: str = "echo 1"
+        cmd2: str = "echo 2"
+        stdout: str = "result of echo"
 
         def script():
-            cmd1_res = yield f"{cmd1} {cmd1_arg}"
+            cmd1_res = yield f"{cmd1}"
             yield f"{cmd2} {cmd1_res}"
 
         # mock
-        run_mock.return_value = CompletedProcess(
-            args=[cmd1],
-            returncode=0,
-            stdout=res
-        )
+        shell_mock.return_value = make_future_process(0, stdout, None)
 
         # when
         Unshell(opt)(script)
 
         # then
-        self.assertEqual(run_mock.mock_calls, [
-            call([cmd1, cmd1_arg], capture_output=True),
-            call([cmd2, *res.split()], capture_output=True)
+        self.assertEqual(shell_mock.mock_calls, [
+            call(
+                cmd1,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            ),
+            call(
+                f"{cmd2} {stdout}",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            ),
         ])
 
     @patch('builtins.print')
-    @patch('subprocess.run')
-    def test_unshell_should_pass_args_to_script(self, run_mock, print_mock):
+    @patch('asyncio.create_subprocess_shell')
+    def test_unshell_should_pass_args_to_script(self, shell_mock, print_mock):
         # given
         opt = Options(env={})
         cmd: str = "echo"
         script_args: List[str] = ['1', '2']
-        res: str = "result of echo OK"
+        stdout: str = "result of echo"
 
         def script(*args: List[str]):
             for arg in args:
                 yield f"{cmd} {arg}"
 
         # mock
-        run_mock.return_value = CompletedProcess(
-            args=[cmd],
-            returncode=0,
-            stdout=res
-        )
+        shell_mock.return_value = make_future_process(0, stdout, None)
 
         # when
         Unshell(opt)(script, *script_args)
 
         # then
-        self.assertEqual(run_mock.mock_calls, [
-            call([cmd, script_args[0]], capture_output=True),
-            call([cmd, script_args[1]], capture_output=True)
+        self.assertEqual(shell_mock.mock_calls, [
+            call(
+                f"{cmd} {script_args[0]}",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            ),
+            call(
+                f"{cmd} {script_args[1]}",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            ),
         ])
         self.assertEqual(print_mock.mock_calls, [
             call(f"• {cmd} {script_args[0]}"),
-            call(f"➜ {res}"),
+            call(f"➜ {stdout}"),
             call(f"• {cmd} {script_args[1]}"),
-            call(f"➜ {res}"),
+            call(f"➜ {stdout}"),
+        ])
+
+    @patch('builtins.print')
+    @patch('asyncio.create_subprocess_shell')
+    def test_unshell_should_process_async_command(
+        self,
+        shell_mock,
+        print_mock
+    ):
+        # given
+        opt = Options(env={})
+        cmd: str = "echo OK"
+        stdout: str = "result of echo OK"
+        stderr: str = ""
+
+        async def do_cmd():
+            return cmd
+
+        async def script():
+            yield f"{await do_cmd()}"
+            yield f"{await do_cmd()}"
+
+        # mock
+        shell_mock.return_value = make_future_process(0, stdout, stderr)
+
+        # when
+        Unshell(opt)(script)
+
+        # then
+        self.assertEqual(shell_mock.mock_calls, [
+            call(
+                cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            ),
+            call(
+                cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+        ])
+        self.assertEqual(print_mock.mock_calls, [
+            call(f"• {cmd}"),
+            call(f"➜ {stdout}"),
+            call(f"• {cmd}"),
+            call(f"➜ {stdout}")
+        ])
+
+    @patch('builtins.print')
+    @patch('asyncio.create_subprocess_shell')
+    def test_unshell_should_pass_cmd_res_to_next_async_cmd(
+        self,
+        shell_mock,
+        print_mock
+    ):
+        # given
+        opt = Options(env={})
+        cmd1: str = "echo 1"
+        cmd2: str = "echo 2"
+        stdout: str = "result of echo OK"
+        stderr: str = ""
+
+        async def do_cmd1():
+            return cmd1
+
+        async def do_cmd2():
+            return cmd2
+
+        async def script():
+            cmd_res = yield f"{await do_cmd1()}"
+            yield f"{await do_cmd2()} {cmd_res}"
+
+        # mock
+        shell_mock.return_value = make_future_process(0, stdout, stderr)
+
+        # when
+        Unshell(opt)(script)
+
+        # then
+        self.assertEqual(shell_mock.mock_calls, [
+            call(
+                cmd1,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            ),
+            call(
+                f"{cmd2} {stdout}",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+        ])
+        self.assertEqual(print_mock.mock_calls, [
+            call(f"• {cmd1}"),
+            call(f"➜ {stdout}"),
+            call(f"• {cmd2} {stdout}"),
+            call(f"➜ {stdout}")
         ])

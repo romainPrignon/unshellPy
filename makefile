@@ -1,8 +1,11 @@
-.PHONY: dev, build, test
-.SILENT: dev, build, test
+.PHONY: dev, lint, build, test
+.SILENT: dev, lint, build, test
 
 dev: ## make dev script=./fixtures/scripts/my_script.py [args="foo bar"]
 	docker run --name unshell-py -it --rm -v ${shell pwd}:/opt unshell-py python src/cli.py $(script) $(args)
+
+lint: ## make lint
+	mypy src/
 
 build:
 	docker build -t unshell-py .

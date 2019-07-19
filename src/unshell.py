@@ -1,75 +1,87 @@
-from typing import Any, Callable
-from type import Options, Script, Args, Commands, Command
+from typing import Any, Callable, Union, cast
+from type import Options, Script, Args, Commands, Command, Engine, AsyncScript, AsyncCommands
 
 import inspect
-import subprocess
+import asyncio
 
 defaultOptions = Options(env={})
 
 
-def Unshell(opt: Options = defaultOptions):
-    def exec(script: Script, *args: Args) -> Any:
-        assert_unshell_script(script)
+def Unshell(opt: Options = defaultOptions) -> Engine:
+    async def engine(script: Union[Script, AsyncScript], *args: Args) -> Any:
+        if is_async_generator(script):
+            commands = script(*args)
+            commands = cast(AsyncCommands, commands)
 
-        commands: Commands = script(*args)
-        cmd_res = None
+            return await iter(commands.asend, StopAsyncIteration, True)
 
-        while True:
-            try:
-                command: Command = commands.send(cmd_res)
+        if is_generator(script):
+            commands = script(*args)
+            commands = cast(Commands, commands)
 
-                if not isValidCmd(command):
-                    continue
+            return await iter(commands.send, StopIteration, False)
 
-                cmd_res = do_exec(command)
+        raise TypeError('unshell: Invalid SCRIPT')
 
-            except StopIteration as command:
-                if not command.value:  # if there is no return
-                    break
+    return lambda script, *args: asyncio.run(engine(script, *args))
 
-                if not isValidCmd(command.value):
-                    continue
 
-                cmd_res = do_exec(command.value)
+async def iter(send, exception, is_async):
+    cmd_res = None
+
+    while True:
+        try:
+            if is_async:
+                command: Command = await send(cmd_res)
+            else:
+                command: Command = send(cmd_res)
+
+            if not isValidCmd(command):
+                continue
+
+            cmd_res = await exec(command)
+
+        except exception as command:
+            if not hasattr(command, "value"):  # if there is no return
                 break
 
-    return exec
+            if not isValidCmd(command.value):
+                break
+
+            cmd_res = await exec(command.value)
+            break
 
 
-def do_exec(command: Command) -> str:
+async def exec(command: Command) -> str:
     print(f"• {command}")
 
-    process_result = subprocess.run(
-        command.split(),
-        capture_output=True
+    process_result = await asyncio.create_subprocess_shell(
+        command,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
-    stdout = process_result.stdout
-    stderr = process_result.stderr
+    await process_result.wait()
+
+    stdout, stderr = await process_result.communicate()
     return_code = process_result.returncode
 
-    if stderr and return_code:
-        err = f"{command}: {stderr}"
+    stdoutDecoded = stdout.decode('utf-8')
+    stderrDecoded = stderr.decode('utf-8')
+
+    if stderrDecoded and return_code:
+        err = f"{command}: {stderrDecoded}"
 
         print(err)
         raise Exception(err)
 
-        return stderr
+        return stderrDecoded
 
-    if stdout:
-        print(f"➜ {stdout}")
+    if stdoutDecoded:
+        print(f"➜ {stdoutDecoded}")
 
-        return stdout
+        return stdoutDecoded
 
     raise Exception("unshell: something went wrong")
-
-
-def assert_unshell_script(fn: Callable) -> bool:
-    if is_async_generator(fn):
-        return True
-    if is_generator(fn):
-        return True
-
-    raise TypeError('unshell: Invalid SCRIPT')
 
 
 def is_generator(fn: Callable) -> bool:
@@ -77,7 +89,7 @@ def is_generator(fn: Callable) -> bool:
 
 
 def is_async_generator(fn: Callable) -> bool:
-    return inspect.isgeneratorfunction(fn) and inspect.iscoroutinefunction(fn)
+    return inspect.isasyncgenfunction(fn)
 
 
 def isValidCmd(cmd: str) -> bool:

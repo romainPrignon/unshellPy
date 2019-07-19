@@ -86,7 +86,8 @@ Here is some examples of what you can do with unshell
 The code is available under the [MIT license](LICENSE).
 
 ## TODO
-- async
+- fix test
 - pre-commit
 - setuptool
+- cli
 - readme
