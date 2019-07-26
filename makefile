@@ -1,14 +1,21 @@
-.PHONY: dev, lint, build, test
-.SILENT: dev, lint, build, test
+.PHONY: help dev, lint, test, build
+.SILENT: help dev, lint, test, build
 
-dev: ## make dev script=./fixtures/scripts/my_script.py [args="foo bar"]
-	docker run --name unshell-py -it --rm -v ${shell pwd}:/opt unshell-py python src/cli.py $(script) $(args)
+help: ## make help
+	python setup.py --help-command
+
+install: ## make install
+	pip install -r requirements.txt
+
+freeze: # make freeze
+	pip freeze > requirements.txt
 
 lint: ## make lint
+	flake8 src/ type/
 	mypy src/
 
-build:
-	docker build -t unshell-py .
-
 test: ## make test [module=src.test_unshell.TestUnshell.test_unshell_should_return_function]
-	docker run --name unshell-py -it --rm -v ${shell pwd}:/opt unshell-py python -m unittest $(module)
+	python -m unittest $(module)
+
+build:
+	python setup.py bdist bdist_wheel

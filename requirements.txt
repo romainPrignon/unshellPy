@@ -1,0 +1,4 @@
+flake8==3.7.7
+mypy==0.711
+setuptools==41.0.1
+wheel==0.33.4

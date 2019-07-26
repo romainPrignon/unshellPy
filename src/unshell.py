@@ -1,5 +1,6 @@
 from typing import Any, Callable, Union, cast
-from type import Options, Script, Args, Commands, Command, Engine, AsyncScript, AsyncCommands
+from type import Options, Script, Args, Commands, Command, Engine, \
+    AsyncScript, AsyncCommands
 
 import inspect
 import asyncio

@@ -1,4 +1,5 @@
-from typing import Any, Callable, Generator, AsyncGenerator, Dict, List, Union, Optional, Awaitable
+from typing import Any, Callable, Generator, AsyncGenerator, Dict, List, \
+    Union, Optional, Awaitable
 from dataclasses import dataclass
 
 Args = List[Any]

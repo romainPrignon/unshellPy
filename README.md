@@ -86,8 +86,8 @@ Here is some examples of what you can do with unshell
 The code is available under the [MIT license](LICENSE).
 
 ## TODO
-- fix test
+- coverage
 - pre-commit
-- setuptool
 - cli
 - readme
+- release script (semver+ publish)
