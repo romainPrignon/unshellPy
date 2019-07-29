@@ -1,6 +1,8 @@
 __pycache__/
+.coverage
 .mypy_cache/
 .vscode/
 build/
 dist/
+htmlcov/
 Unshell.egg-info/

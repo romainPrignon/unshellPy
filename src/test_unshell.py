@@ -141,6 +141,32 @@ class TestUnshell(unittest.TestCase):
 
     @patch('builtins.print')
     @patch('asyncio.create_subprocess_shell')
+    def test_unshell_should_throw_if_nothing_returns(
+        self, shell_mock, print_mock
+    ):
+        # given
+        opt = Options(env={})
+        cmd: str = "echo OK"
+
+        def script():
+            yield f"{cmd}"
+
+        # mock
+        shell_mock.return_value = make_future_process(None, None, None)
+
+        # when
+        try:
+            Unshell(opt)(script)
+        except Exception as err:
+            # then
+            err_msg = f"unshell: something went wrong"
+            self.assertEqual(str(err), err_msg)
+            self.assertEqual(print_mock.mock_calls, [
+                call(f"• {cmd}"),
+            ])
+
+    @patch('builtins.print')
+    @patch('asyncio.create_subprocess_shell')
     def test_unshell_should_process_several_command(
         self,
         shell_mock,

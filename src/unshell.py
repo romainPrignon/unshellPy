@@ -75,8 +75,6 @@ async def exec(command: Command) -> str:
         print(err)
         raise Exception(err)
 
-        return stderrDecoded
-
     if stdoutDecoded:
         print(f"➜ {stdoutDecoded}")
 
