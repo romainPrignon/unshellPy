@@ -13,7 +13,7 @@ class TestColors(unittest.TestCase):
         output = colors.red(val)
 
         # then
-        self.assertEqual(output, f"\x1b[31m${val}\x1b[0m")
+        self.assertEqual(output, f"\x1b[31m{val}\x1b[0m")
 
     def test_green(self):
         # given
@@ -23,4 +23,4 @@ class TestColors(unittest.TestCase):
         output = colors.green(val)
 
         # then
-        self.assertEqual(output, f"\x1b[32m${val}\x1b[0m")
+        self.assertEqual(output, f"\x1b[32m{val}\x1b[0m")
