@@ -6,13 +6,14 @@ help: ## make help
 
 install: ## make install
 	pip install -r requirements.txt
+	./scripts/install_hooks.sh
 
 freeze: # make freeze
 	pip freeze > requirements.txt
 
 lint: ## make lint
 	flake8 src/ type/
-	mypy src/
+	mypy src/ type/
 
 test: ## make test
 	python setup.py test
