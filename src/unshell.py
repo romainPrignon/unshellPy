@@ -1,14 +1,16 @@
 from typing import Any, Callable, Union, cast
-from type import Options, Script, Args, Commands, Command, Engine, \
+from type import Script, Args, Commands, Command, Engine, \
     AsyncScript, AsyncCommands
 
 import inspect
 import asyncio
 
-defaultOptions = Options(env={})
+defaultOptions: Any = {
+    "env": {}
+}
 
 
-def Unshell(opt: Options = defaultOptions) -> Engine:
+def Unshell(opt: Any = defaultOptions) -> Engine:
     async def engine(script: Union[Script, AsyncScript], *args: Args) -> Any:
         if is_async_generator(script):
             commands = script(*args)

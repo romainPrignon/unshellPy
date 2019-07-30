@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Callable, List
-from type import Options
 
 import unittest
 import asyncio
@@ -44,7 +43,7 @@ def make_future_process(return_code, stdout, stderr):
 class TestUnshell(unittest.TestCase):
     def test_unshell_should_return_function(self):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
 
         # when
         output = Unshell(opt)
@@ -68,7 +67,7 @@ class TestUnshell(unittest.TestCase):
     @patch('asyncio.create_subprocess_shell')
     def test_unshell_should_process_command(self, shell_mock, print_mock):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
         cmd: str = "echo OK"
         stdout: str = "result of echo OK"
         stderr: str = ""
@@ -99,7 +98,7 @@ class TestUnshell(unittest.TestCase):
         self, shell_mock, print_mock
     ):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
 
         def script():
             yield ""
@@ -117,7 +116,7 @@ class TestUnshell(unittest.TestCase):
         self, shell_mock, print_mock
     ):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
         cmd: str = "echo OK"
         stderr: str = "cmd error"
 
@@ -145,7 +144,7 @@ class TestUnshell(unittest.TestCase):
         self, shell_mock, print_mock
     ):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
         cmd: str = "echo OK"
 
         def script():
@@ -173,7 +172,7 @@ class TestUnshell(unittest.TestCase):
         print_mock
     ):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
         cmd: str = "echo OK"
         stdout: str = "result of echo OK"
 
@@ -215,7 +214,7 @@ class TestUnshell(unittest.TestCase):
         print_mock
     ):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
         cmd: str = "echo OK"
         stdout: str = "result of echo OK"
 
@@ -257,7 +256,7 @@ class TestUnshell(unittest.TestCase):
         print_mock
     ):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
         cmd1: str = "echo 1"
         cmd2: str = "echo 2"
         stdout: str = "result of echo"
@@ -290,7 +289,7 @@ class TestUnshell(unittest.TestCase):
     @patch('asyncio.create_subprocess_shell')
     def test_unshell_should_pass_args_to_script(self, shell_mock, print_mock):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
         cmd: str = "echo"
         script_args: List[str] = ['1', '2']
         stdout: str = "result of echo"
@@ -333,7 +332,7 @@ class TestUnshell(unittest.TestCase):
         print_mock
     ):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
         cmd: str = "echo OK"
         stdout: str = "result of echo OK"
         stderr: str = ""
@@ -379,7 +378,7 @@ class TestUnshell(unittest.TestCase):
         print_mock
     ):
         # given
-        opt = Options(env={})
+        opt = {"env": {}}
         cmd1: str = "echo 1"
         cmd2: str = "echo 2"
         stdout: str = "result of echo OK"
