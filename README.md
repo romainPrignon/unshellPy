@@ -86,7 +86,7 @@ Here is some examples of what you can do with unshell
 The code is available under the [MIT license](LICENSE).
 
 ## TODO
-- cli
+- test_cli
 - readme
 - release script (semver+ publish)
 - spec
