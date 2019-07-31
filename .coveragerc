@@ -1,6 +1,7 @@
 [run]
 branch = True
 omit =
+    fixtures/**
     setup.py
     spec/**
     src/test_*.py

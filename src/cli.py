@@ -58,7 +58,7 @@ def resolveScript(scriptPath: str) -> Script:
 
 def cli(argv: Args, env: os._Environ) -> Any:
     try:
-        [_, unshell_command, *args] = argv
+        [_, unshell_command, __] = argv
     except Exception:
         return help(argv, env)
 
@@ -73,7 +73,7 @@ def cli(argv: Args, env: os._Environ) -> Any:
         return help(argv, env)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     argv = sys.argv
     env = os.environ
 
