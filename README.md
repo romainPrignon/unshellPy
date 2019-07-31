@@ -2,22 +2,22 @@
 
 > Set your shell free !
 
-Combine the flexibility of a programming language with the knowledge of shell command.
-As developer, sometimes, we need to run shell scripts. It will be cool to do so with the familiarity of a programming language.
-An an ops, sometimes, we need to run complex shell scripts. It will be cool to do so with the power of a programming language.
+Combine python and shell command.
+
 
 ## Features
 
 * **Light**: There are no dependencies
-* **Easy**: A small abstraction over `os`
 * **Async**: Work with async/await
 * **Testable**: Unshell script are easily testable because they yield execution control
+
 
 ## Setup
 
 ```sh
 pip install unshell
 ```
+
 
 ## Usage
 
@@ -33,60 +33,55 @@ Commands:
   run       run a script through unshell runtime
 ```
 
-Given the script: `pause.js` to pause all docker containers
-```js
-module.exports = function * pause () {
-  const ids = yield * fetchContainerIds()
+Given the script: `pause.py` to pause all docker containers
+```py
+def pause():
+  ids = yield from fetchContainerIds()
 
-  for(const id of ids) {
-    yield `docker pause ${id}`
-  }
-}
+  for id in ids:
+    yield f"docker pause {id}"
 
-function * fetchContainerIds () {
-  const ids = yield `docker ps -q --no-trunc`
 
-  return ids.split('\n').filter(Boolean)
-}
+def fetchContainerIds():
+  ids = yield f"docker ps -q --no-trunc"
+
+  return ids.splitlines()
 ```
 
 Run it through unshell
 ```sh
-unshell run pause.js
+unshell run pause.py
 ```
+
 
 ### Embedded script inside apps
-Given the precedent script `pause.js`
-Run it with `zeit/micro`
-```js
-module.exports = (req, res) => {
-  const {resolve} = require('path')
-  const {unshell} = require('unshell')
+Given the precedent script `pause.py`
+```py
+from unshell import Unshell
+import os
 
-  try {
-    const script = require(resolve('./scripts/pause.js'))
-    unshell({env: process.env})(script)
-
-    res.end('OK')
-  } catch (err) {
-    res.end('NOK')
-  }
+def main():
+    script = resolve('./scripts/pause.js') # resolve your python module
+    
+    try:
+        Unshell({env: os.environ})(script)
+    except Exception as err:
+        print(err)
 }
 ```
+
 
 ## Examples
 Here is some examples of what you can do with unshell
 - [Pause containers](examples/pause-resume-container)
 
-## Contribute
- Please check out the issues labeled `help wanted` or `good-first-issue`. Try npx good-first-issue unshell
 
 ## License
 
 The code is available under the [MIT license](LICENSE).
 
+
 ## TODO
-- readme
-- release script (semver+ publish)
+- release script (semver and publish script)
 - spec
 - example
