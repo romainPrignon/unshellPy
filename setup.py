@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="Unshell",
-    version="0.1.2",
+    version_command="git describe --tags",
     python_requires=">=3.7",
     packages=find_packages(exclude=["spec"]),
     entry_points={

@@ -1,5 +1,5 @@
-.PHONY: help install, freeze, lint, test, test-one, coverage, coverage-html, build
-.SILENT: help install, freeze, lint, test, test-one, coverage, coverage-html, build
+.PHONY: help install, freeze, lint, test, test-one, coverage, coverage-html, build, publish
+.SILENT: help install, freeze, lint, test, test-one, coverage, coverage-html, build, publish
 
 help: ## make help
 	python setup.py --help-command
@@ -28,11 +28,15 @@ coverage: ## make coverage
 coverage-html: ## make coverage-html
 	coverage html
 
+version: ## make version v=2.4.3
+	git tag -a "$(v)" -m "Release $(v)"
+	git push --follow-tags
+
 build:
 	rm -rf build/
 	rm -rf dist/
 	rm -rf Unshell.egg-info
 	python setup.py bdist bdist_wheel
 
-publish:
+publish: build
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
