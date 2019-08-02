@@ -23,7 +23,7 @@ run       run a script through unshell runtime
     """)
 
 
-def run(argv: Args, env: os._Environ):
+def run(argv: Args, env: os._Environ) -> Any:
     [_, __, scriptPath, *args] = argv
 
     script = resolveScript(scriptPath)
@@ -73,7 +73,7 @@ def cli(argv: Args, env: os._Environ) -> Any:
         return help(argv, env)
 
 
-if __name__ == "__main__":  # pragma: no cover
+def main():  # pragma: no cover
     argv = sys.argv
     env = os.environ
 
@@ -83,3 +83,7 @@ if __name__ == "__main__":  # pragma: no cover
         sys.exit(0)
     except Exception:
         sys.exit(1)
+
+
+if __name__ == "__main__":  # pragma: no cover
+    main()

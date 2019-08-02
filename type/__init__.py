@@ -1,6 +1,7 @@
 from typing import Any, Callable, Generator, AsyncGenerator, List, \
-    Union, Optional, Awaitable
+    Union, Optional, Awaitable, Dict
 
+Options = Dict[Any, Any]
 Args = List[Any]
 Command = str
 CommandResult = Optional[str]

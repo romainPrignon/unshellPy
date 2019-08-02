@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Callable, List
+from type import Options
 
 import unittest
 import asyncio
@@ -34,7 +35,7 @@ def make_future_process(return_code, stdout, stderr):
         async def communicate(self):
             return [Stdout(), Stderr()]
 
-    future_process = asyncio.Future(loop=loop)
+    future_process: asyncio.Future = asyncio.Future(loop=loop)
     future_process.set_result(Process())
 
     return future_process
@@ -43,7 +44,7 @@ def make_future_process(return_code, stdout, stderr):
 class TestUnshell(unittest.TestCase):
     def test_unshell_should_return_function(self):
         # given
-        opt = {"env": {}}
+        opt: Options = {"env": {}}
 
         # when
         output = Unshell(opt)

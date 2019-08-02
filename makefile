@@ -29,4 +29,10 @@ coverage-html: ## make coverage-html
 	coverage html
 
 build:
+	rm -rf build/
+	rm -rf dist/
+	rm -rf Unshell.egg-info
 	python setup.py bdist bdist_wheel
+
+publish:
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*

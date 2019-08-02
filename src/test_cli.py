@@ -16,7 +16,7 @@ class TestCli(unittest.TestCase):
     def test_cli_should_display_help_on_help_command(self, print_mock):
         # given
         argv = ['cli.py', 'help']
-        env = {}
+        env = os.environ
 
         # when
         cli(argv, env)
@@ -36,7 +36,7 @@ run       run a script through unshell runtime
     def test_cli_should_display_help_if_called_with_nothing(self, print_mock):
         # given
         argv = ['cli.py']
-        env = {}
+        env = os.environ
 
         # when
         cli(argv, env)
@@ -51,7 +51,7 @@ run       run a script through unshell runtime
     ):
         # given
         argv = ['cli.py', 'run']
-        env = {}
+        env = os.environ
 
         # when
         cli(argv, env)
@@ -61,7 +61,7 @@ run       run a script through unshell runtime
     def test_cli_should_display_help_on_invalid_command(self, print_mock):
         # given
         argv = ['cli.py', 'invalid', 'foo']
-        env = {}
+        env = os.environ
 
         # when
         cli(argv, env)
@@ -73,7 +73,7 @@ run       run a script through unshell runtime
     def test_cli_should_display_error_on_unresolvable_script(self, print_mock):
         # given
         argv = ['cli.py', 'run', 'unresolvable']
-        env = {}
+        env = os.environ
 
         # when
         try:
@@ -90,7 +90,7 @@ run       run a script through unshell runtime
         abs_test_path = os.path.dirname(os.path.abspath(__file__))
         scriptPath = f"{abs_test_path}/../fixtures/scripts/notCompatibleCmd.py"
         argv = ['cli.py', 'run', scriptPath]
-        env = {}
+        env = os.environ
 
         # when
         try:
@@ -107,7 +107,7 @@ run       run a script through unshell runtime
         abs_test_path = os.path.dirname(os.path.abspath(__file__))
         scriptPath = f"{abs_test_path}/../fixtures/scripts/yieldAndReturnCommand.py"
         argv = ['cli.py', 'run', scriptPath]
-        env = {}
+        env = os.environ
 
         # when
         cli(argv, env)

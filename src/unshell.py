@@ -1,16 +1,16 @@
 from typing import Any, Callable, Union, cast
 from type import Script, Args, Commands, Command, Engine, \
-    AsyncScript, AsyncCommands
+    AsyncScript, AsyncCommands, Options
 
 import inspect
 import asyncio
 
-defaultOptions: Any = {
+defaultOptions: Options = {
     "env": {}
 }
 
 
-def Unshell(opt: Any = defaultOptions) -> Engine:
+def Unshell(opt: Options = defaultOptions) -> Engine:
     async def engine(script: Union[Script, AsyncScript], *args: Args) -> Any:
         if is_async_generator(script):
             commands = script(*args)
@@ -31,13 +31,14 @@ def Unshell(opt: Any = defaultOptions) -> Engine:
 
 async def iter(send, exception, is_async):
     cmd_res = None
+    command: Command = ""
 
     while True:
         try:
             if is_async:
-                command: Command = await send(cmd_res)
+                command = await send(cmd_res)
             else:
-                command: Command = send(cmd_res)
+                command = send(cmd_res)
 
             if not isValidCmd(command):
                 continue
@@ -85,11 +86,11 @@ async def exec(command: Command) -> str:
     raise Exception("unshell: something went wrong")
 
 
-def is_generator(fn: Callable) -> bool:
+def is_generator(fn: Callable[[Any], Any]) -> bool:
     return inspect.isgeneratorfunction(fn)
 
 
-def is_async_generator(fn: Callable) -> bool:
+def is_async_generator(fn: Callable[[Any], Any]) -> bool:
     return inspect.isasyncgenfunction(fn)
 
 

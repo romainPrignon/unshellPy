@@ -78,10 +78,13 @@ Here is some examples of what you can do with unshell
 
 ## License
 
-The code is available under the [MIT license](LICENSE).
+The code is available under the [MIT license](LICENSE.md).
 
 
 ## TODO
 - release script (semver and publish script)
+- fix typings
+- install dev dependencies
 - spec
 - example
+- publish on pypi
