@@ -1,4 +1,4 @@
-.PHONY: help install, freeze, lint, test, test-one, coverage, coverage-html, build, publish
+.PHONY: help install, freeze, lint, test, test-one, coverage, coverage-html, build
 .SILENT: help install, freeze, lint, test, test-one, coverage, coverage-html, build, publish
 
 help: ## make help
