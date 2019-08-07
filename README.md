@@ -64,10 +64,10 @@ def main():
     script = resolve('./scripts/pause.js') # resolve your python module
     
     try:
-        Unshell({env: os.environ})(script)
+        Unshell({"env": os.environ})(script)
     except Exception as err:
         print(err)
-}
+
 ```
 
 
@@ -84,7 +84,7 @@ The code is available under the [MIT license](LICENSE.md).
 ## TODO
 - release script (semver and publish script)
 - fix core import
-- fix typings
+- fix typings (better rules places)
 - install dev dependencies
 - spec
 - example

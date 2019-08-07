@@ -1,5 +1,5 @@
 from typing import Any, Callable, Union, cast
-from type import Script, Args, Commands, Command, Engine, \
+from .type import Script, Args, Commands, Command, Engine, \
     AsyncScript, AsyncCommands, Options
 
 import inspect

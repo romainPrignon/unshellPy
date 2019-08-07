@@ -3,12 +3,9 @@ import os
 from unittest.mock import patch, call
 
 # test
-from src.cli import cli
-from src.utils import colors
+from .cli import cli
+from .utils import colors
 
-
-# mock
-# loop = asyncio.get_event_loop()
 
 class TestCli(unittest.TestCase):
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 from typing import Any
-from type import Args, Script
+from .type import Args, Script
 
 import os
 import sys
 import importlib.util
-from src.unshell import Unshell
-from src.utils import colors
+from .core import Unshell
+from .utils import colors
 
 
 def help(argv: Args, env: os._Environ) -> Any:

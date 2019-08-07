@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from typing import Callable, List
-from type import Options
+from .type import Options
 
 import unittest
 import asyncio
 from unittest.mock import patch, call
 
 # test
-from src.unshell import Unshell
+from .core import Unshell
 
 
 # mock

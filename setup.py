@@ -7,7 +7,10 @@ setup(
     name="Unshell",
     version_command="git describe --tags",
     python_requires=">=3.7",
-    packages=find_packages(exclude=["spec"]),
+    package_dir={"": "src"},
+    packages=[".", "utils"],
+    # packages=find_packages(where="src"),
+    package_data={"unshell": ["py.typed"]},
     entry_points={
         "console_scripts": ['unshell = src.cli:main']
     },
