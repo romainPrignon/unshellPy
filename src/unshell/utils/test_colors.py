@@ -1,7 +1,7 @@
 import unittest
 
 # test
-import src.utils.colors as colors
+from .colors import red, green
 
 
 class TestColors(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestColors(unittest.TestCase):
         val = 'value'
 
         # when
-        output = colors.red(val)
+        output = red(val)
 
         # then
         self.assertEqual(output, f"\x1b[31m{val}\x1b[0m")
@@ -20,7 +20,7 @@ class TestColors(unittest.TestCase):
         val = 'value'
 
         # when
-        output = colors.green(val)
+        output = green(val)
 
         # then
         self.assertEqual(output, f"\x1b[32m{val}\x1b[0m")

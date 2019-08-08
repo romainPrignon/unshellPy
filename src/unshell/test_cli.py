@@ -85,7 +85,7 @@ run       run a script through unshell runtime
     def test_cli_should_display_error_on_errored_script(self, print_mock):
         # given
         abs_test_path = os.path.dirname(os.path.abspath(__file__))
-        scriptPath = f"{abs_test_path}/../fixtures/scripts/notCompatibleCmd.py"
+        scriptPath = f"{abs_test_path}/../../fixtures/scripts/notCompatibleCmd.py"
         argv = ['cli.py', 'run', scriptPath]
         env = os.environ
 
@@ -102,7 +102,7 @@ run       run a script through unshell runtime
     def test_cli_should_execute_script_on_run_command(self, print_mock):
         # given
         abs_test_path = os.path.dirname(os.path.abspath(__file__))
-        scriptPath = f"{abs_test_path}/../fixtures/scripts/yieldAndReturnCommand.py"
+        scriptPath = f"{abs_test_path}/../../fixtures/scripts/yieldAndReturnCommand.py"
         argv = ['cli.py', 'run', scriptPath]
         env = os.environ
 

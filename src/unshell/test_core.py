@@ -41,7 +41,7 @@ def make_future_process(return_code, stdout, stderr):
     return future_process
 
 
-class TestUnshell(unittest.TestCase):
+class TestCore(unittest.TestCase):
     def test_unshell_should_return_function(self):
         # given
         opt: Options = {"env": {}}

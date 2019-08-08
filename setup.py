@@ -8,12 +8,12 @@ setup(
     version_command="git describe --tags",
     python_requires=">=3.7",
     package_dir={"": "src"},
-    packages=[".", "utils"],
-    # packages=find_packages(where="src"),
+    packages=find_packages(where="src"),
     package_data={"unshell": ["py.typed"]},
     entry_points={
-        "console_scripts": ['unshell = src.cli:main']
+        "console_scripts": ['unshell = src.unshell.cli:main']
     },
+    test_suite="src.unshell",
 
     author="Romain Prignon",
     author_email="pro.rprignon@gmail.com",

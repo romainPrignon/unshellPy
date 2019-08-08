@@ -82,8 +82,6 @@ The code is available under the [MIT license](LICENSE.md).
 
 
 ## TODO
-- release script (semver and publish script)
-- fix core import
 - fix typings (better rules places)
 - install dev dependencies
 - spec

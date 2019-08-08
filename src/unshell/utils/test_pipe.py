@@ -3,7 +3,7 @@ from typing import Callable
 import unittest
 
 # test
-from src.utils.pipe import pipe
+from .pipe import pipe
 
 
 class TestPipe(unittest.TestCase):
