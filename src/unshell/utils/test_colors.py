@@ -1,26 +1,26 @@
 import unittest
 
 # test
-import src.utils.colors as colors
+from .colors import red, green
 
 
 class TestColors(unittest.TestCase):
-    def test_red(self):
+    def test_red(self) -> None:
         # given
         val = 'value'
 
         # when
-        output = colors.red(val)
+        output = red(val)
 
         # then
         self.assertEqual(output, f"\x1b[31m{val}\x1b[0m")
 
-    def test_green(self):
+    def test_green(self) -> None:
         # given
         val = 'value'
 
         # when
-        output = colors.green(val)
+        output = green(val)
 
         # then
         self.assertEqual(output, f"\x1b[32m{val}\x1b[0m")

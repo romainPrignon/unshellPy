@@ -4,4 +4,5 @@ mypy==0.711
 setuptools==41.0.1
 setuptools-version-command==2.2
 twine==1.13.0
+typing_extensions==3.7.4
 wheel==0.33.4

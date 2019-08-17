@@ -3,24 +3,24 @@ from typing import Callable
 import unittest
 
 # test
-from src.utils.pipe import pipe
+from .pipe import pipe
 
 
 class TestPipe(unittest.TestCase):
-    def test_pipe_should_return_a_function(self):
+    def test_pipe_should_return_a_function(self) -> None:
         # given
-        def echo(x):
+        def echo(x: str) -> str:
             return f"echo {x}"
 
         # when
         output = pipe(echo)
 
         # then
-        self.assertTrue(isinstance(output, Callable))
+        self.assertTrue(isinstance(output, Callable))  # type: ignore
 
-    def test_pipe_should_return_an_empty_string(self):
+    def test_pipe_should_return_an_empty_string(self) -> None:
         # given
-        def echo(x):
+        def echo(x: str) -> str:
             return f"echo {x}"
 
         # when
@@ -30,12 +30,12 @@ class TestPipe(unittest.TestCase):
         # then
         self.assertEqual(output, f"echo {param}")
 
-    def test_pipe_should_pipe_two_function(self):
+    def test_pipe_should_pipe_two_function(self) -> None:
         # given
-        def echo(x):
+        def echo(x: str) -> str:
             return f"echo {x}"
 
-        def grep():
+        def grep() -> str:
             return "grep world"
 
         # when

@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
-from typing import Any
-from type import Args, Script
+from typing import List, Any
+from .type import Args, Script
 
 import os
 import sys
 import importlib.util
-from src.unshell import Unshell
-from src.utils import colors
+from .core import Unshell
+from .utils import colors
 
 
-def help(argv: Args, env: os._Environ) -> Any:
+def help(argv: Args, env: os._Environ) -> None:
     print("""
 Execute script through unshell runtime
 
@@ -23,7 +23,7 @@ run       run a script through unshell runtime
     """)
 
 
-def run(argv: Args, env: os._Environ) -> Any:
+def run(argv: List[Any], env: os._Environ) -> None:
     [_, __, scriptPath, *args] = argv
 
     script = resolveScript(scriptPath)
@@ -56,7 +56,7 @@ def resolveScript(scriptPath: str) -> Script:
         raise err
 
 
-def cli(argv: Args, env: os._Environ) -> Any:
+def cli(argv: List[Any], env: os._Environ) -> None:
     try:
         [_, unshell_command, __] = argv
     except Exception:
@@ -73,7 +73,7 @@ def cli(argv: Args, env: os._Environ) -> Any:
         return help(argv, env)
 
 
-def main():  # pragma: no cover
+def main() -> None:  # pragma: no cover
     argv = sys.argv
     env = os.environ
 

@@ -12,13 +12,13 @@ freeze: # make freeze
 	pip freeze > requirements.txt
 
 lint: ## make lint
-	flake8 src/ type/
-	mypy src/ type/
+	flake8 src/
+	mypy src/
 
 test: ## make test
 	python setup.py test
 
-test-one: ## make test test=src.test_unshell.TestUnshell.test_unshell_should_return_function
+test-one: ## make test-one test=src.unshell.test_core or make test-one test=src.unshell.test_core.testCore.test_unshell_should_return_function
 	python setup.py test --test-suite $(test)
 
 coverage: ## make coverage
