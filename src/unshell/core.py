@@ -1,25 +1,28 @@
-from typing import Any, Callable, Union, cast
-from .type import Script, Args, Commands, Command, Engine, \
-    AsyncScript, AsyncCommands, Options
+from typing import Any, Callable, Union, cast, Type, Optional, Awaitable
+from .type import Script, Command, Engine, \
+    AsyncScript, Options, Commands, AsyncCommands, Args
 
 import inspect
 import asyncio
+
+AsyncSend = Callable[[Optional[str]], Awaitable[str]]
+Send = Callable[[Optional[str]], str]
 
 defaultOptions: Options = {
     "env": {}
 }
 
 
-def Unshell(opt: Options = defaultOptions) -> Engine:
+def Unshell(opt: Optional[Options] = defaultOptions) -> Engine:
     async def engine(script: Union[Script, AsyncScript], *args: Args) -> Any:
         if is_async_generator(script):
-            commands = script(*args)
+            commands = script(*args)  # type: ignore
             commands = cast(AsyncCommands, commands)
 
             return await iter(commands.asend, StopAsyncIteration, True)
 
         if is_generator(script):
-            commands = script(*args)
+            commands = script(*args)  # type: ignore
             commands = cast(Commands, commands)
 
             return await iter(commands.send, StopIteration, False)
@@ -29,15 +32,21 @@ def Unshell(opt: Options = defaultOptions) -> Engine:
     return lambda script, *args: asyncio.run(engine(script, *args))
 
 
-async def iter(send, exception, is_async):
+async def iter(
+    send: Union[Send, AsyncSend],
+    exception: Union[Type[StopIteration], Type[StopAsyncIteration]],
+    is_async: bool
+) -> None:
     cmd_res = None
     command: Command = ""
 
     while True:
         try:
             if is_async:
+                send = cast(AsyncSend, send)
                 command = await send(cmd_res)
             else:
+                send = cast(Send, send)
                 command = send(cmd_res)
 
             if not isValidCmd(command):
@@ -86,11 +95,11 @@ async def exec(command: Command) -> str:
     raise Exception("unshell: something went wrong")
 
 
-def is_generator(fn: Callable[[Any], Any]) -> bool:
+def is_generator(fn: Any) -> bool:
     return inspect.isgeneratorfunction(fn)
 
 
-def is_async_generator(fn: Callable[[Any], Any]) -> bool:
+def is_async_generator(fn: Any) -> bool:
     return inspect.isasyncgenfunction(fn)
 
 

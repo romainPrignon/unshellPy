@@ -82,8 +82,6 @@ The code is available under the [MIT license](LICENSE.md).
 
 
 ## TODO
-- fix typings (better rules places)
-- install dev dependencies
 - spec
 - example
 - publish on pypi

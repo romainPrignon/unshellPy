@@ -5,7 +5,7 @@ from .colors import red, green
 
 
 class TestColors(unittest.TestCase):
-    def test_red(self):
+    def test_red(self) -> None:
         # given
         val = 'value'
 
@@ -15,7 +15,7 @@ class TestColors(unittest.TestCase):
         # then
         self.assertEqual(output, f"\x1b[31m{val}\x1b[0m")
 
-    def test_green(self):
+    def test_green(self) -> None:
         # given
         val = 'value'
 

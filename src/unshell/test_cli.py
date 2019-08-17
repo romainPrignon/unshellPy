@@ -1,6 +1,6 @@
 import unittest
 import os
-from unittest.mock import patch, call
+from unittest.mock import patch, call, Mock
 
 # test
 from .cli import cli
@@ -10,7 +10,7 @@ from .utils import colors
 class TestCli(unittest.TestCase):
 
     @patch('builtins.print')
-    def test_cli_should_display_help_on_help_command(self, print_mock):
+    def test_cli_should_display_help_on_help_command(self, print_mock: Mock) -> None:
         # given
         argv = ['cli.py', 'help']
         env = os.environ
@@ -30,7 +30,7 @@ run       run a script through unshell runtime
     """)
 
     @patch('builtins.print')
-    def test_cli_should_display_help_if_called_with_nothing(self, print_mock):
+    def test_cli_should_display_help_if_called_with_nothing(self, print_mock: Mock) -> None:
         # given
         argv = ['cli.py']
         env = os.environ
@@ -44,8 +44,8 @@ run       run a script through unshell runtime
     @patch('builtins.print')
     def test_cli_should_display_help_if_called_with_no_script(
         self,
-        print_mock
-    ):
+        print_mock: Mock
+    ) -> None:
         # given
         argv = ['cli.py', 'run']
         env = os.environ
@@ -55,7 +55,7 @@ run       run a script through unshell runtime
         print_mock.assert_called_once()
 
     @patch('builtins.print')
-    def test_cli_should_display_help_on_invalid_command(self, print_mock):
+    def test_cli_should_display_help_on_invalid_command(self, print_mock: Mock) -> None:
         # given
         argv = ['cli.py', 'invalid', 'foo']
         env = os.environ
@@ -67,7 +67,7 @@ run       run a script through unshell runtime
         print_mock.assert_called_once()
 
     @patch('builtins.print')
-    def test_cli_should_display_error_on_unresolvable_script(self, print_mock):
+    def test_cli_should_display_error_on_unresolvable_script(self, print_mock: Mock) -> None:
         # given
         argv = ['cli.py', 'run', 'unresolvable']
         env = os.environ
@@ -82,7 +82,7 @@ run       run a script through unshell runtime
             )
 
     @patch('builtins.print')
-    def test_cli_should_display_error_on_errored_script(self, print_mock):
+    def test_cli_should_display_error_on_errored_script(self, print_mock: Mock) -> None:
         # given
         abs_test_path = os.path.dirname(os.path.abspath(__file__))
         scriptPath = f"{abs_test_path}/../../fixtures/scripts/notCompatibleCmd.py"
@@ -99,7 +99,7 @@ run       run a script through unshell runtime
             )
 
     @patch('builtins.print')
-    def test_cli_should_execute_script_on_run_command(self, print_mock):
+    def test_cli_should_execute_script_on_run_command(self, print_mock: Mock) -> None:
         # given
         abs_test_path = os.path.dirname(os.path.abspath(__file__))
         scriptPath = f"{abs_test_path}/../../fixtures/scripts/yieldAndReturnCommand.py"
