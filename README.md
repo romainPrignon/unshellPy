@@ -82,6 +82,6 @@ The code is available under the [MIT license](LICENSE.md).
 
 
 ## TODO
-- spec
+- finish spec
 - example
-- publish on pypi
+- publish on pypi instead of test.pypi

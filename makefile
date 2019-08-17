@@ -1,5 +1,5 @@
-.PHONY: help install, freeze, lint, test, test-one, coverage, coverage-html, build
-.SILENT: help install, freeze, lint, test, test-one, coverage, coverage-html, build, publish
+.PHONY: help install, freeze, lint, test, test-one, spec, coverage, coverage-html, build, version
+.SILENT: help install, freeze, lint, test, test-one, spec, coverage, coverage-html, build, version, publish
 
 help: ## make help
 	python setup.py --help-command
@@ -20,6 +20,9 @@ test: ## make test
 
 test-one: ## make test-one test=src.unshell.test_core or make test-one test=src.unshell.test_core.testCore.test_unshell_should_return_function
 	python setup.py test --test-suite $(test)
+
+spec: ## make spec
+	python setup.py test --test-suite spec
 
 coverage: ## make coverage
 	coverage run setup.py test
