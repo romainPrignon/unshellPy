@@ -1,5 +1,5 @@
-.PHONY: help install, freeze, lint, test, test-one, spec, coverage, coverage-html, build, version
-.SILENT: help install, freeze, lint, test, test-one, spec, coverage, coverage-html, build, version, publish
+.PHONY: help install freeze lint test test-one spec coverage coverage-html build version
+.SILENT: help install freeze lint test test-one spec coverage coverage-html build version publish
 
 help: ## make help
 	python setup.py --help-command
