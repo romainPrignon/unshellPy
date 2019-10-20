@@ -1,0 +1,13 @@
+name: 'License renew'
+description: 'Increment year in LICENSE'
+inputs:
+  github-token:
+    description: 'Github token to submit PR'
+    required: true
+  license-path:
+    description: 'Path to your license file'
+    required: false
+    default: 'LICENSE'
+runs:
+  using: 'node10'
+  main: 'index.js'

@@ -1,0 +1,12 @@
+{
+  "name": "license-renew-action",
+  "version": "1.0.0",
+  "description": "This action increment the year in your `LICENSE` file",
+  "main": "index.js",
+  "author": "Romain Prignon <pro.rprignon@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.2.0",
+    "@actions/github": "^1.1.0"
+  }
+}

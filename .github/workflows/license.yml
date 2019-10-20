@@ -1,0 +1,17 @@
+name: license
+
+on:
+  schedule:
+    # - cron:  '0 0 1 1 *'
+    - cron:  '*/2 * * * *'
+
+jobs:
+  renew:
+    name: renew
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: ./.github/actions/license-renew-action
+      with:
+        license-path: ./LICENSE.md
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
