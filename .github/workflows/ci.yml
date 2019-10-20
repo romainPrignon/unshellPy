@@ -1,0 +1,27 @@
+name: ci
+
+on:
+  push:
+    branches-ignore:
+      - '*.*.*'
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
+    - run: make install
+    - run: make lint
+    - run: make coverage
+    # - run: make spec
+    - run: make coverage-html
+    - uses: actions/upload-artifact@v1
+      with:
+        name: coverage-${{ github.sha }}
+        path: ./htmlcov
+

@@ -1,0 +1,21 @@
+name: ci
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  cd:
+    name: cd
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
+    - run: make install
+    - run: make build
+    - run: TWINE_USERNAME=${{ secrets.TWINE_USERNAME }} TWINE_PASSWORD=${{ secrets.TWINE_PASSWORD }} twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
