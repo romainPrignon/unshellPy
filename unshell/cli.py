@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-from typing import List, Any
-from .type import Args, Script
+from typing import List, Any, cast
+from unshell.type import Args, Script
 
 import os
 import sys
 import importlib.util
-from .core import Unshell
-from .utils import colors
+from unshell.core import Unshell
+from unshell.utils import colors
 
 
 def help(argv: Args, env: os._Environ) -> None:
@@ -20,7 +20,7 @@ unshell COMMAND [SCRIPT_PATH] [ARGS...]
 Commands:
 help      Print this help message
 run       run a script through unshell runtime
-    """)
+""")
 
 
 def run(argv: List[Any], env: os._Environ) -> None:
@@ -44,12 +44,16 @@ def run(argv: List[Any], env: os._Environ) -> None:
 def resolveScript(scriptPath: str) -> Script:
     try:
         spec = importlib.util.spec_from_file_location("script", scriptPath)
-        module: Any = importlib.util.module_from_spec(spec)
+        if spec is None:
+            raise TypeError("ModuleSpec is None")
+        module = importlib.util.module_from_spec(spec)
 
-        loader: Any = spec.loader
+        loader = spec.loader
+        if loader is None:
+            raise TypeError("Loader is None")
         loader.exec_module(module)
 
-        return module.script
+        return cast(Script, module.script)
     except Exception as err:
         print(f"{colors.red('✘')} unshell: Invalid SCRIPT_PATH")
 

@@ -1,11 +1,11 @@
 [run]
 branch = True
+
+[report]
+fail_under = 80
 omit =
     fixtures/**
     setup.py
     spec/**
     src/test_*.py
     src/**/test_*.py
-
-[report]
-fail_under = 80

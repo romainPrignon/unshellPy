@@ -16,13 +16,13 @@ defaultOptions: Options = {
 def Unshell(opt: Optional[Options] = defaultOptions) -> Engine:
     async def engine(script: Union[Script, AsyncScript], *args: Args) -> Any:
         if is_async_generator(script):
-            commands = script(*args)  # type: ignore
+            commands = script(*args)
             commands = cast(AsyncCommands, commands)
 
             return await iter(commands.asend, StopAsyncIteration, True)
 
         if is_generator(script):
-            commands = script(*args)  # type: ignore
+            commands = script(*args)
             commands = cast(Commands, commands)
 
             return await iter(commands.send, StopIteration, False)

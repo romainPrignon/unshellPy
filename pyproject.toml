@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "unshellPy"
+version = "0.4.2"
+description = "Set your shell free !"
+license = "MIT"
+authors = ["Romain Prignon <pro.rprignon@gmail.com>"]
+readme = "README.md"
+keywords = ["shell subprocess scripting"]
+repository = "https://github.com/romainPrignon/unshellPy"
+packages = [
+    { include = "unshell" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.8.5"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.950"
+flake8 = "^4.0.1"
+autopep8 = "^1.6.0"
+pytest = "^7.1.2"
+pytest-cov = "^3.0.0"
+setuptools = "^62.3.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "setuptools>=62.3.2"]
+build-backend = "poetry.core.masonry.api"

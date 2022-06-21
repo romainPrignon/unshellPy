@@ -1,0 +1,43 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: version to publish
+        required: true
+
+jobs:
+  cd:
+    name: cd
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.8.5'
+        architecture: 'x64'
+
+    - run: |
+        make setup-poetry
+        echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+    - run: poetry config virtualenvs.in-project true
+
+    - name: configure git
+      run: |
+        git config --global user.name 'Romain Prignon'
+        git config --global user.email 'pro.rprignon@gmail.com'
+
+    - run: make install
+
+    - run: make build version=${{ github.event.inputs.version }}
+
+    - run: make deploy
+
+    - run: make publish
+      env:
+        TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
