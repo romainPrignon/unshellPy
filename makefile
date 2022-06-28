@@ -46,7 +46,7 @@ build: ## make build version=patch|minor|major
 	poetry build
 
 deploy:
-	git add pyprojet.toml dist/
+	git add -f pyproject.toml dist/
 	git commit -m "Release $(shell poetry version -s)"
 	git tag -a "$(shell poetry version -s)" -m "Release $(shell poetry version -s)"
 	git push --follow-tags
@@ -55,4 +55,4 @@ publish:
 	poetry publish
 
 release: ## make release version=patch|minor|major
-	gh workflow run release.yml -f version=${version} -f
+	gh workflow run release.yml -f version=${version}
