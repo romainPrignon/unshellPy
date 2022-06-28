@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "unshellPy"
-version = "0.4.2"
+version = "0.4.3"
 description = "Set your shell free !"
 license = "MIT"
 authors = ["Romain Prignon <pro.rprignon@gmail.com>"]
