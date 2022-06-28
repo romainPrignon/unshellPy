@@ -1,45 +1,58 @@
-.PHONY: help install freeze lint test test-one spec coverage coverage-html build version
-.SILENT: help install freeze lint test test-one spec coverage coverage-html build version publish
+.PHONY: spec
 
-help: ## make help
-	python setup.py --help-command
+src = unshell/
+spec = spec/
+report ?= term # or html
 
-install: ## make install
-	pip install -r requirements.txt
+setup-poetry:
+	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+
+install:
+	poetry install
 	./scripts/install_hooks.sh
 
-freeze: # make freeze
-	pip freeze > requirements.txt
+dev: check
 
-lint: ## make lint
-	flake8 src/
-	mypy src/
+debug:
+	poetry run pytest ${src} -x --pdb
 
-test: ## make test
-	python setup.py test
+lint:
+	poetry run flake8 ${src} ${spec}
 
-test-one: ## make test-one test=src.unshell.test_core or make test-one test=src.unshell.test_core.testCore.test_unshell_should_return_function
-	python setup.py test --test-suite $(test)
+fmt:
+	poetry run autopep8 --in-place --recursive ${src} ${spec}
 
-spec: ## make spec
-	python setup.py test --test-suite spec
+check:
+	poetry run mypy ${src}
 
-coverage: ## make coverage
-	coverage run setup.py test
-	coverage report -m
+test:
+	poetry run pytest ${src}
 
-coverage-html: ## make coverage-html
-	coverage html
+test-file: ## make test-file f=unshell/test_core.py
+	poetry run pytest ${f}
 
-version: ## make version v=2.4.3
-	git tag -a "$(v)" -m "Release $(v)"
+test-one: ## make test-one k=test_unshell_should_return_function
+	poetry run pytest -k ${k}
+
+spec:
+	poetry run pytest ${spec}
+
+cov:
+	poetry run pytest --cov=${src} --cov=${spec} --cov-report=${report}
+
+build: ## make build version=patch|minor|major
+	rm -rf dist/
+	poetry version ${version}
+	poetry build
+
+deploy:
+	git add pyprojet.toml dist/
+	git commit -m "Release $(shell poetry version -s)"
+	git tag -a "$(shell poetry version -s)" -m "Release $(shell poetry version -s)"
 	git push --follow-tags
 
-build:
-	rm -rf build/
-	rm -rf dist/
-	rm -rf Unshell.egg-info
-	python setup.py bdist bdist_wheel
+publish:
+	poetry publish
 
-publish: build
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+release: ## make release version=patch|minor|major
+	gh workflow run release.yml -f version=${version} -f

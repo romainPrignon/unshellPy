@@ -75,13 +75,14 @@ def main():
 Here is some examples of what you can do with unshell
 - [Pause containers](examples/pause-resume-container)
 
+## Contribute
+```sh
+poetry config --local virtualenvs.in-project true
+poetry shell
+make install
+watch make dev
+```
 
 ## License
 
 The code is available under the [MIT license](LICENSE.md).
-
-
-## TODO
-- finish spec
-- example
-- publish on pypi instead of test.pypi

@@ -1,4 +1,0 @@
-include README.md
-include LICENSE.md
-
-global-exclude test_*.py

@@ -1,4 +1,5 @@
 #!/bin/sh -e
 
 make lint
-make coverage
+make check
+make test

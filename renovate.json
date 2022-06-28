@@ -1,0 +1,67 @@
+{
+    "enabled": true,
+    "dependencyDashboard": true,
+    "timezone": "Europe/Paris",
+    "schedule": [],
+    "rangeStrategy": "bump",
+    "prConcurrentLimit": 3,
+    "reviewersFromCodeOwners": true,
+    "labels": [
+        "renovate",
+        "dependencies"
+    ],
+    "enabledManagers": [
+        "poetry"
+    ],
+    "vulnerabilityAlerts": {
+        "enabled": false
+    },
+    "packageRules": [
+        {
+            "matchPackageNames": [
+                "python"
+            ],
+            "enabled": false
+        },
+        {
+            "matchCurrentVersion": "<1.0.0",
+            "stabilityDays": 7,
+            "dependencyDashboardApproval": true
+        },
+        {
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "stabilityDays": 7,
+            "dependencyDashboardApproval": true
+        },
+        {
+            "groupName": "non-major all",
+            "matchPackagePatterns": [
+                "*"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
+            ],
+            "matchCurrentVersion": ">=1.0.0"
+        },
+        {
+            "groupName": "test",
+            "matchPackagePatterns": [
+                "pytest",
+                "pytest-cov"
+            ],
+            "automerge": true
+        },
+        {
+            "groupName": "linter",
+            "matchPackagePatterns": [
+                "mypy",
+                "flake8",
+                "autopep8"
+            ],
+            "automerge": true
+        }
+    ]
+}
