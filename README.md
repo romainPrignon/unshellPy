@@ -16,6 +16,7 @@ Combine python and shell command.
 
 ```sh
 pip install unshell
+alias unshell=$(pip show unshell | grep Location | cut -d: -f2)/unshell/cli.py
 ```
 
 
