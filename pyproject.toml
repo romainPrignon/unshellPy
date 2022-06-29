@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "unshell"
-version = "0.5.0"
+version = "0.6.0"
 description = "Set your shell free !"
 license = "MIT"
 authors = ["Romain Prignon <pro.rprignon@gmail.com>"]
