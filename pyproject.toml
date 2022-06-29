@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "unshellPy"
+name = "unshell"
 version = "0.5.0"
 description = "Set your shell free !"
 license = "MIT"
