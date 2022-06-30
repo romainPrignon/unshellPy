@@ -24,7 +24,10 @@ run       run a script through unshell runtime
 
 
 def run(argv: List[Any], env: os._Environ) -> None:
-    [_, __, scriptPath, *args] = argv
+    try:
+        [_, __, scriptPath, *args] = argv
+    except ValueError:
+        return help(argv, env)
 
     script = resolveScript(scriptPath)
     opt = {
@@ -34,11 +37,9 @@ def run(argv: List[Any], env: os._Environ) -> None:
     try:
         Unshell(opt)(script, *args)
     except Exception as err:  # TODO: handle unshell exception
-        msg = f"{colors.red('✘')} unshell: something went wrong"
-
-        print(msg)
-
-        raise err
+        raise Exception(f"""{colors.red('✘')} unshell: something went wrong. Please, Make sure your script is valid
+{err}
+""")
 
 
 def resolveScript(scriptPath: str) -> Script:
@@ -54,16 +55,14 @@ def resolveScript(scriptPath: str) -> Script:
         loader.exec_module(module)
 
         return cast(Script, module.script)
-    except Exception as err:
-        print(f"{colors.red('✘')} unshell: Invalid SCRIPT_PATH")
-
-        raise err
+    except Exception:
+        raise Exception(f"{colors.red('✘')} unshell: Invalid script or script path")
 
 
 def cli(argv: List[Any], env: os._Environ) -> None:
     try:
-        [_, unshell_command, __] = argv
-    except Exception:
+        [_, unshell_command, *rest] = argv
+    except ValueError:
         return help(argv, env)
 
     command_switcher = {
@@ -85,8 +84,8 @@ def main() -> None:  # pragma: no cover
         cli(argv=argv, env=env)
 
         sys.exit(0)
-    except Exception:
-        sys.exit(1)
+    except Exception as err:
+        sys.exit(err)
 
 
 if __name__ == "__main__":  # pragma: no cover

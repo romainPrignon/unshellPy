@@ -1,12 +1,12 @@
-from typing import Any, Callable, Union, cast, Type, Optional, Awaitable
-from .type import Script, Command, Engine, \
+from typing import Any, Callable, List, Union, cast, Type, Optional, Awaitable
+from .type import CommandResult, Script, Command, Engine, \
     AsyncScript, Options, Commands, AsyncCommands, Args
 
 import inspect
 import asyncio
 
-AsyncSend = Callable[[Optional[str]], Awaitable[str]]
-Send = Callable[[Optional[str]], str]
+AsyncSend = Callable[[Optional[Union[str, List[str]]]], Awaitable[Union[str, List[str]]]]
+Send = Callable[[Optional[Union[str, List[str]]]], Union[str, List[str]]]
 
 defaultOptions: Options = {
     "env": {}
@@ -37,7 +37,7 @@ async def iter(
     exception: Union[Type[StopIteration], Type[StopAsyncIteration]],
     is_async: bool
 ) -> None:
-    cmd_res = None
+    cmd_res: CommandResult = None
     command: Command = ""
 
     while True:
@@ -52,7 +52,10 @@ async def iter(
             if not isValidCmd(command):
                 continue
 
-            cmd_res = await exec(command)
+            if isinstance(command, list):
+                cmd_res = await asyncio.gather(*[exec(cmd) for cmd in command])
+            else:
+                cmd_res = await exec(command)
 
         except exception as command:
             if not hasattr(command, "value"):  # if there is no return
@@ -61,7 +64,10 @@ async def iter(
             if not isValidCmd(command.value):
                 break
 
-            cmd_res = await exec(command.value)
+            if isinstance(command, list):
+                cmd_res = await asyncio.gather(*[exec(cmd) for cmd in command.value])
+            else:
+                cmd_res = await exec(command.value)
             break
 
 
@@ -69,7 +75,7 @@ async def exec(command: Command) -> str:
     print(f"• {command}")
 
     process_result = await asyncio.create_subprocess_shell(
-        command,
+        cast(str, command),
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
@@ -103,5 +109,5 @@ def is_async_generator(fn: Any) -> bool:
     return inspect.isasyncgenfunction(fn)
 
 
-def isValidCmd(cmd: str) -> bool:
+def isValidCmd(cmd: Union[str, List[str]]) -> bool:
     return bool(cmd)
