@@ -2,21 +2,20 @@
 
 > Set your shell free !
 
-Combine python and shell command.
+Combine PHP and shell command.
 
 
 ## Features
 
-* **Light**: There are no dependencies
-* **Async**: Work with async/await
+* **Light**: No dependencies
+* **Async**: Work Asynchronously
 * **Testable**: Unshell script are easily testable because they yield execution control
 
 
 ## Setup
 
 ```sh
-pip install unshell
-alias unshell=$(pip show unshell | grep Location | cut -d: -f2)/unshell/cli.py
+composer require romainprignon/unshell
 ```
 
 
@@ -34,29 +33,29 @@ Commands:
   run       run a script through unshell runtime
 ```
 
-Given the script: `pause.py` to pause all docker containers
-```py
-def pause():
-  ids = yield from fetchContainerIds()
+Given the script: `pause.php` to pause all docker containers
+```php
+function pause():
+  $ids = yield from fetchContainerIds();
 
-  for id in ids:
-    yield f"docker pause {id}"
+  for $id in $ids:
+    yield "docker pause {$id}";
 
 
-def fetchContainerIds():
-  ids = yield f"docker ps -q --no-trunc"
+function fetchContainerIds():
+  $ids = yield "docker ps -q --no-trunc";
 
-  return ids.splitlines()
+  return explode("\n", $ids);
 ```
 
 Run it through unshell
 ```sh
-unshell run pause.py
+unshell run pause.php
 ```
 
 
 ### Embedded script inside apps
-Given the precedent script `pause.py`
+Given the precedent script `pause.php`
 ```py
 from unshell import Unshell
 import os
@@ -74,7 +73,7 @@ def main():
 
 ## Examples
 Here is some examples of what you can do with unshell
-- [Pause containers](examples/pause-resume-container)
+- [Pause containers](examples/pause-resume-container/)
 
 ## Contribute
 ```sh
@@ -87,3 +86,7 @@ watch make dev
 ## License
 
 The code is available under the [MIT license](LICENSE.md).
+
+
+## TODO
+- everything

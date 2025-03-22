@@ -1,9 +1,5 @@
-__pycache__/
-.coverage
-.mypy_cache/
-.venv/
-.vscode/
-build/
-dist/
-htmlcov/
-Unshell.egg-info/
+coverage/
+vendor/
+
+.php_cs.cache
+composer.lock
